@@ -24,8 +24,8 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.5,
             jump: -8,
-            width: 50,  // Adjusted for ghost sprite
-            height: 50  // Adjusted for ghost sprite
+            width: 50,
+            height: 50
         };
 
         // Pipes properties
@@ -127,12 +127,12 @@ class FlappyBird {
     }
 
     draw() {
-        // Clear canvas
-        this.ctx.fillStyle = '#70c5ce';
+        // Clear canvas with dark background
+        this.ctx.fillStyle = '#1a1a1a';  // Dark background
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Draw pipes
-        this.ctx.fillStyle = '#2ecc71';
+        // Draw pipes with a darker green
+        this.ctx.fillStyle = '#1b8a3f';  // Darker green for pipes
         this.pipes.forEach(pipe => {
             // Top pipe
             this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.height);
