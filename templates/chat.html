@@ -119,15 +119,61 @@
             border: 1px solid #404040;
         }
         .chat-container {
-            height: 85vh;
+            height: calc(100vh - 120px);
             display: flex;
             flex-direction: column;
+            width: 95%;
             max-width: 900px;
-            margin: 20px auto;
+            margin: 10px auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 20px;
+            padding: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: calc(100vh - 180px);
+                width: 98%;
+                margin: 5px auto;
+                padding: 10px;
+            }
+
+            .message {
+                max-width: 85% !important;
+                padding: 10px 15px !important;
+            }
+
+            .input-group {
+                padding: 10px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .input-group .form-control,
+            .input-group .btn {
+                width: 100%;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .model-selector,
+            .api-config {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            pre {
+                max-width: 100%;
+                overflow-x: auto;
+                font-size: 14px;
+            }
+
+            code {
+                font-size: 13px;
+            }
         }
         .messages {
             flex-grow: 1;
@@ -256,7 +302,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
-                <div class="ms-auto d-flex align-items-center gap-3">
+                <div class="ms-auto d-flex align-items-center gap-3 flex-wrap">
                     <div class="d-flex align-items-center">
                         <select class="model-selector me-2" id="modelSelector" onchange="changeModel(this.value)">
                             <option value="gpt-3.5">GPT-3.5 Turbo</option>
