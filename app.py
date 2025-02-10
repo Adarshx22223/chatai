@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import os
 import requests
 import logging
+import openai
+from openai import OpenAI
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -10,52 +12,79 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
 
-# DeepSeek API configuration
-DEEPSEEK_API_URL = "https://api.deepseek.ai/v1/chat/completions"  # Updated endpoint
-DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY")
+# AI Provider configurations
+DEEPSEEK_API_URL = "https://api.deepseek.ai/v1/chat/completions"
+
+def get_api_key(provider):
+    """Get API key from session for the specified provider"""
+    return session.get(f'{provider}_api_key')
 
 @app.route('/')
 def home():
     return render_template('chat.html')
 
+@app.route('/set-api-key', methods=['POST'])
+def set_api_key():
+    data = request.json
+    provider = data.get('provider')
+    api_key = data.get('api_key')
+
+    if not provider or not api_key:
+        return jsonify({'error': 'Provider and API key are required'}), 400
+
+    # Store API key in session
+    session[f'{provider}_api_key'] = api_key
+    return jsonify({'message': f'{provider} API key set successfully'})
+
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get('message')
+    data = request.json
+    user_message = data.get('message')
+    provider = data.get('provider', 'deepseek')  # Default to deepseek
+
     if not user_message:
         return jsonify({'error': 'No message provided'}), 400
 
-    if not DEEPSEEK_API_KEY:
-        logger.error("DeepSeek API key not found in environment variables")
-        return jsonify({'error': 'API configuration error'}), 500
+    api_key = get_api_key(provider)
+    if not api_key:
+        return jsonify({'error': f'Please set your {provider} API key first'}), 401
 
     try:
-        logger.debug(f"Sending request to DeepSeek API with message: {user_message}")
-        response = requests.post(
-            DEEPSEEK_API_URL,
-            json={
-                "model": "deepseek-chat",
-                "messages": [
-                    {"role": "user", "content": user_message}
-                ]
-            },
-            headers={
-                'Authorization': f'Bearer {DEEPSEEK_API_KEY}',
-                'Content-Type': 'application/json'
-            }
-        )
-        response.raise_for_status()
-        logger.debug(f"Received response from DeepSeek API: {response.json()}")
+        if provider == 'openai':
+            client = OpenAI(api_key=api_key)
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": user_message}]
+            )
+            assistant_message = response.choices[0].message.content
 
-        # Extract the assistant's message from the response
-        assistant_message = response.json()['choices'][0]['message']['content']
+        elif provider == 'deepseek':
+            logger.debug(f"Sending request to DeepSeek API with message: {user_message}")
+            response = requests.post(
+                DEEPSEEK_API_URL,
+                json={
+                    "model": "deepseek-chat",
+                    "messages": [
+                        {"role": "user", "content": user_message}
+                    ]
+                },
+                headers={
+                    'Authorization': f'Bearer {api_key}',
+                    'Content-Type': 'application/json'
+                }
+            )
+            response.raise_for_status()
+            logger.debug(f"Received response from DeepSeek API: {response.json()}")
+            assistant_message = response.json()['choices'][0]['message']['content']
+
+        else:
+            return jsonify({'error': 'Invalid AI provider selected'}), 400
+
         return jsonify({'reply': assistant_message})
 
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error calling DeepSeek API: {str(e)}")
+    except (requests.exceptions.RequestException, openai.APIError) as e:
+        logger.error(f"Error calling {provider} API: {str(e)}")
         return jsonify({'error': f'Error communicating with AI service: {str(e)}'}), 500
-    except KeyError as e:
-        logger.error(f"Unexpected API response format: {str(e)}")
-        return jsonify({'error': 'Unexpected response format from AI service'}), 500
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         return jsonify({'error': 'An unexpected error occurred'}), 500

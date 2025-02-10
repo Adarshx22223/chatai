@@ -57,11 +57,36 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .api-key-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="bg-light">
     <div class="container mt-4">
         <h2 class="text-center mb-4">AI Chat Assistant</h2>
+
+        <!-- API Key Configuration -->
+        <div class="api-key-form">
+            <h5>Configure AI Provider</h5>
+            <div class="mb-3">
+                <label for="provider" class="form-label">Select Provider:</label>
+                <select class="form-select" id="provider">
+                    <option value="deepseek">DeepSeek</option>
+                    <option value="openai">OpenAI (GPT-4)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="apiKey" class="form-label">API Key:</label>
+                <input type="password" class="form-control" id="apiKey" placeholder="Enter your API key">
+            </div>
+            <button class="btn btn-primary" onclick="setApiKey()">Save API Key</button>
+        </div>
+
         <div class="chat-container">
             <div class="messages" id="messages"></div>
             <div class="loading" id="loading">
@@ -86,9 +111,35 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
+        async function setApiKey() {
+            const provider = document.getElementById('provider').value;
+            const apiKey = document.getElementById('apiKey').value;
+
+            try {
+                const response = await fetch('/set-api-key', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ provider, api_key: apiKey })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('API key saved successfully!');
+                    document.getElementById('apiKey').value = '';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error saving API key');
+            }
+        }
+
         async function sendMessage() {
             const input = document.getElementById('messageInput');
             const loadingDiv = document.getElementById('loading');
+            const provider = document.getElementById('provider').value;
             const message = input.value.trim();
             if (!message) return;
 
@@ -103,7 +154,10 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({ 
+                        message,
+                        provider 
+                    })
                 });
                 const data = await response.json();
 
