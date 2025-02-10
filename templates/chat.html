@@ -11,6 +11,83 @@
             background: #f0f2f5;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             padding-top: 60px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 0;
+            }
+            
+            .navbar {
+                position: relative !important;
+            }
+
+            .container {
+                padding: 10px !important;
+            }
+
+            .chat-container {
+                height: calc(100vh - 180px) !important;
+                margin: 10px 0 !important;
+                padding: 10px !important;
+            }
+
+            .navbar .container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .ms-auto {
+                margin: 0 !important;
+                width: 100%;
+            }
+
+            .d-flex {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px !important;
+            }
+
+            .api-config {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .api-config .form-control {
+                max-width: none !important;
+            }
+
+            .provider-indicators {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .model-selector {
+                width: 100%;
+                max-width: none;
+            }
+
+            .input-group {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .input-group .form-control,
+            .input-group .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .message {
+                max-width: 90% !important;
+            }
+
+            pre {
+                max-width: 100%;
+                overflow-x: auto;
+            }
         }
         .navbar {
             background: #ffffff;
@@ -175,7 +252,7 @@
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand" href="#">AI Chat Assistant</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
