@@ -1,4 +1,5 @@
-(\w+)?\n([\s\S]*?)```/g;
+function formatCodeBlocks(message) {
+            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
             return message.replace(codeBlockRegex, (match, language, code) => {
                 const formattedCode = hljs.highlightAuto(code.trim(), language ? [language] : undefined).value;
                 return `<pre><code class="language-${language || 'plaintext'}">${formattedCode}</code></pre>`;
@@ -9,11 +10,12 @@
             document.getElementById('activeModel').textContent = `Active: ${model}`;
         }
 
-        // Modified addMessage function to handle code formatting
         function addMessage(text, isUser) {
             const messagesDiv = document.getElementById('messages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
 
             // Format code blocks if present
-            if (!isUser && text.includes('
+            if (!isUser && text.includes('```')) {
+                text = formatCodeBlocks(text);
+            }
