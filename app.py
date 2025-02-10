@@ -39,9 +39,13 @@ def set_api_key():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    data = request.json
-    user_message = data.get('message')
-    provider = data.get('provider', 'deepseek')  # Default to deepseek
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No data received'}), 400
+            
+        user_message = data.get('message')
+        provider = data.get('provider', 'gpt-3.5')  # Default to GPT-3.5
 
     if provider == 'gemini':
         api_key = get_api_key(provider)
