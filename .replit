@@ -17,29 +17,14 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Server"
+args = "Expo Web"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start application"
+args = "Expo Web App"
 
 [[workflows.workflow]]
-name = "Server"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-waitForPort = 5000
-
-[[workflows.workflow]]
-name = "Start application"
+name = "Expo Web"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -52,6 +37,25 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "npx expo start --web --port 19006"
 waitForPort = 19006
+
+[[workflows.workflow]]
+name = "Expo Web App"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx expo start --web --port 3000"
+waitForPort = 3000
+
+[[ports]]
+localPort = 3000
+externalPort = 3003
 
 [[ports]]
 localPort = 5000
@@ -68,3 +72,7 @@ externalPort = 3000
 [[ports]]
 localPort = 19007
 externalPort = 3001
+
+[[ports]]
+localPort = 19008
+externalPort = 3002
