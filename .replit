@@ -17,26 +17,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Expo Web App"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Flask Server"
-
-[[workflows.workflow]]
-name = "Expo Web App"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx expo start --web --port 3000"
-waitForPort = 3000
 
 [[workflows.workflow]]
 name = "Flask Server"
