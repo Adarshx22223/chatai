@@ -4,6 +4,7 @@ import requests
 import logging
 import openai
 from openai import OpenAI
+import google.generativeai as genai
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -41,6 +42,21 @@ def chat():
     data = request.json
     user_message = data.get('message')
     provider = data.get('provider', 'deepseek')  # Default to deepseek
+
+    if provider == 'gemini':
+        api_key = get_api_key(provider)
+        if not api_key:
+            return jsonify({'error': 'Please set your Gemini API key first'}), 401
+            
+        try:
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(user_message)
+            assistant_message = response.text
+            return jsonify({'reply': assistant_message})
+        except Exception as e:
+            logger.error(f"Error calling Gemini API: {str(e)}")
+            return jsonify({'error': f'Error communicating with Gemini: {str(e)}'}), 500
 
     if not user_message:
         return jsonify({'error': 'No message provided'}), 400
