@@ -1,25 +1,29 @@
 function formatCodeBlocks(message) {
-            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-            return message.replace(codeBlockRegex, (match, language, code) => {
-                const formattedCode = hljs.highlightAuto(code.trim(), language ? [language] : undefined).value;
-                return `<pre><code class="language-${language || 'plaintext'}">${formattedCode}</code></pre>`;
-            });
-        }
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    return message.replace(codeBlockRegex, (match, language, code) => {
+        const formattedCode = hljs.highlightAuto(code.trim(), language ? [language] : undefined).value;
+        return `<pre><code class="language-${language || 'plaintext'}">${formattedCode}</code></pre>`;
+    });
+}
 
-        function changeModel(model) {
-            document.getElementById('activeModel').textContent = `Active: ${model}`;
-        }
+function changeModel(model) {
+    document.getElementById('activeModel').textContent = `Active: ${model}`;
+}
 
-        function addMessage(text, isUser) {
-            const messagesDiv = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+function addMessage(text, isUser) {
+    const messagesDiv = document.getElementById('messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
 
-            // Format code blocks if present
-            if (!isUser && text.includes('```')) {
-                text = formatCodeBlocks(text);
-            }
-            
-            messageDiv.innerHTML = text;
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    // Format code blocks if present
+    if (!isUser && text.includes('```')) {
+        text = formatCodeBlocks(text);
+    }
+    
+    // Set the message content and append to chat
+    messageDiv.innerHTML = text;
+    messagesDiv.appendChild(messageDiv);
+    
+    // Scroll to latest message
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
