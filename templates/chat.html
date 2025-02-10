@@ -178,8 +178,29 @@
     </div>
 
     <script>
-        // Store chat history
+        // Store chat history and API keys
         let chatHistory = [];
+        let savedApiKeys = {};
+
+        // Load saved API keys on page load
+        async function loadApiKeys() {
+            try {
+                const response = await fetch('/active-providers');
+                const data = await response.json();
+                savedApiKeys = data.api_keys || {};
+                
+                // Update input field if API key exists for current model
+                const currentModel = document.getElementById('activeModel').textContent.split(': ')[1].toLowerCase();
+                if (savedApiKeys[currentModel]) {
+                    document.getElementById('apiKeyInput').value = savedApiKeys[currentModel];
+                }
+            } catch (error) {
+                console.error('Error loading API keys:', error);
+            }
+        }
+
+        // Load API keys when page loads
+        window.addEventListener('load', loadApiKeys);
 
         // Function to save chat to history
         function saveChatToHistory(userMessage, botMessage) {
@@ -224,6 +245,12 @@
 
         function changeModel(model) {
             document.getElementById('activeModel').textContent = `Active: ${model}`;
+            // Load saved API key for selected model
+            if (savedApiKeys[model]) {
+                document.getElementById('apiKeyInput').value = savedApiKeys[model];
+            } else {
+                document.getElementById('apiKeyInput').value = '';
+            }
         }
 
         function addMessage(text, isUser) {
@@ -299,7 +326,7 @@
                     alert(`Error: ${data.error}`);
                 } else {
                     alert('API key set successfully');
-                    document.getElementById('apiKeyInput').value = '';
+                    savedApiKeys[model] = apiKey;
                 }
             } catch (error) {
                 alert('Failed to set API key');

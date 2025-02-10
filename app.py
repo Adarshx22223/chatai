@@ -107,10 +107,15 @@ def chat():
 @app.route('/active-providers', methods=['GET'])
 def get_active_providers():
     active = []
+    api_keys = {}
     for provider in ['deepseek', 'openai', 'gemini']:
         if session.get(f'{provider}_api_key'):
             active.append(provider)
-    return jsonify({'active_providers': active})
+            api_keys[provider] = session.get(f'{provider}_api_key')
+    return jsonify({
+        'active_providers': active,
+        'api_keys': api_keys
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
