@@ -17,6 +17,18 @@
             height: 100vh;
             overflow: hidden;
         }
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: #0084ff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+        }
         .sidebar {
             width: 280px;
             background: white;
@@ -26,6 +38,7 @@
             overflow-y: auto;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             flex-shrink: 0;
+            transition: transform 0.3s ease;
         }
         .chat-history-item {
             padding: 10px;
@@ -75,8 +88,18 @@
             background: #e3f2fd;
 
         @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
             .sidebar {
-                display: none;
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 999;
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
             }
             .main-content {
                 padding: 10px;
@@ -150,6 +173,7 @@
     </style>
 </head>
 <body>
+    <button class="mobile-toggle" id="sidebarToggle">☰</button>
     <div class="sidebar" id="chatHistory">
         <h3>Chat History</h3>
         <!-- Chat history items will be added here -->
@@ -178,6 +202,23 @@
     </div>
 
     <script>
+        // Mobile sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('chatHistory').classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('chatHistory');
+            const toggle = document.getElementById('sidebarToggle');
+            if (e.target !== sidebar && 
+                !sidebar.contains(e.target) && 
+                e.target !== toggle && 
+                window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+
         // Store chat history and API keys
         let chatHistory = [];
         let savedApiKeys = {};
