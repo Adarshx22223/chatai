@@ -50,7 +50,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npx expo start --web"
+args = "npx expo start --web --port 19006"
 waitForPort = 19006
 
 [[ports]]
@@ -64,3 +64,7 @@ externalPort = 8081
 [[ports]]
 localPort = 19006
 externalPort = 3000
+
+[[ports]]
+localPort = 19007
+externalPort = 3001
