@@ -83,6 +83,18 @@
             padding: 10px;
             text-align: center;
         }
+        .api-key-section {
+            padding: 10px;
+            text-align: center;
+            background: #f8f9fa;
+        }
+        .api-key-section input {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -90,6 +102,10 @@
         <div class="header">
             <h1>AI Chat Assistant</h1>
             <div id="activeModel">Active: GPT-3.5</div>
+        </div>
+        <div class="api-key-section">
+            <input type="password" id="apiKeyInput" placeholder="Enter API key for selected model">
+            <button onclick="setApiKey()">Set API Key</button>
         </div>
         <div class="model-selector">
             <button onclick="changeModel('gpt-3.5')">GPT-3.5</button>
@@ -164,6 +180,36 @@
                 sendMessage();
             }
         });
+
+        async function setApiKey() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            const model = document.getElementById('activeModel').textContent.split(': ')[1].toLowerCase();
+            
+            if (!apiKey) {
+                alert('Please enter an API key');
+                return;
+            }
+
+            try {
+                const response = await fetch('/set-api-key', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        provider: model,
+                        api_key: apiKey
+                    })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    alert('API key set successfully');
+                    document.getElementById('apiKeyInput').value = '';
+                }
+            } catch (error) {
+                alert('Failed to set API key');
+            }
+        }
     </script>
 </body>
 </html>
