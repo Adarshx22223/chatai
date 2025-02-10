@@ -89,5 +89,13 @@ def chat():
         logger.error(f"Unexpected error: {str(e)}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
+@app.route('/active-providers', methods=['GET'])
+def get_active_providers():
+    active = []
+    for provider in ['deepseek', 'openai']:
+        if session.get(f'{provider}_api_key'):
+            active.append(provider)
+    return jsonify({'active_providers': active})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
