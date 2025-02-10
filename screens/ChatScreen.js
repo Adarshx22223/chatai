@@ -11,13 +11,9 @@ export default function ChatScreen() {
     try {
       setIsLoading(true);
       // We'll replace this URL with the actual API endpoint
-      const response = await axios.post('https://api.deepseek.com/v1/chat', {
-        message: userMessage
-      }, {
-        headers: {
-          'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await axios.post('/chat', {
+        message: userMessage,
+        provider: 'deepseek' // or 'openai' or 'gemini'
       });
 
       const botMessage = {

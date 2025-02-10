@@ -19,3 +19,7 @@ function formatCodeBlocks(message) {
             if (!isUser && text.includes('```')) {
                 text = formatCodeBlocks(text);
             }
+            
+            messageDiv.innerHTML = text;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;

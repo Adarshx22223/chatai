@@ -79,21 +79,22 @@ def chat():
 
         elif provider == 'deepseek':
             logger.debug(f"Sending request to DeepSeek API with message: {user_message}")
-            response = requests.post(
-                DEEPSEEK_API_URL,
-                json={
-                    "model": "deepseek-chat",
-                    "messages": [
-                        {"role": "user", "content": user_message}
-                    ]
-                },
-                headers={
-                    'Authorization': f'Bearer {api_key}',
-                    'Content-Type': 'application/json'
-                }
-            )
+            headers = {
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json'
+            }
+            data = {
+                "messages": [{"role": "user", "content": user_message}],
+                "model": "deepseek-chat",
+                "temperature": 0.7,
+                "max_tokens": 1000
+            }
+            response = requests.post(DEEPSEEK_API_URL, json=data, headers=headers)
             response.raise_for_status()
-            assistant_message = response.json()['choices'][0]['message']['content']
+            result = response.json()
+            if 'error' in result:
+                raise Exception(result['error'])
+            assistant_message = result['choices'][0]['message']['content']
             return jsonify({'reply': assistant_message})
 
         else:
